@@ -1,0 +1,57 @@
+name: Build ArozOS with Buildroot
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        submodules: true  # 如果 ArozOS 是作为子模块添加的
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.20
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential git wget
+
+    - name: Clone ArozOS
+      run: |
+        git clone https://github.com/tobychui/arozos.git arozos
+        cd arozos
+        go mod tidy
+        go build
+
+    - name: Build ArozOS
+      run: |
+        cd arozos
+        sudo ./arozos -version  # 检查 ArozOS 版本
+
+    - name: Configure Buildroot
+      run: |
+        cd buildroot
+        make arozos_defconfig
+
+    - name: Build Buildroot
+      run: |
+        cd buildroot
+        make
+
+    - name: Archive Buildroot output
+      uses: actions/upload-artifact@v3
+      with:
+        name: buildroot-output
+        path: buildroot/output/images/
