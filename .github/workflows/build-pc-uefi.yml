@@ -9,7 +9,7 @@ on:
     - cron: '0 2 * * 0'    # 每周日凌晨 2 点自动编译
 
 env:
-  REPO_URL: https://github.com/buildroot/buildroot
+  REPO_URL: https://gitlab.com/buildroot/buildroot
   REPO_BRANCH: 2025.05
   CONFIG_FILE: seed.config
   TZ: Asia/Shanghai
